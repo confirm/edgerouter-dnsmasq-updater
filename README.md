@@ -2,32 +2,36 @@
 
 The Python script in this repository will read all static DHCP mappings of an [Ubiquiti](https://www.ubnt.com/) EdgeRouter X and store them in a [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) compatible hosts file.
 
-This means you can add new static mappings to the EdgeRouter X and run this script to update the hosts file and therefor the DNS server. Of course you can also schedule this script by cron, so you no longer have run anything manually. Just add a new static mapping on the EdgeRouter X and the DNS will automatically be updated within one minute.
+This means you can add new DHCP static mappings to the EdgeRouter X, run this script to update the hosts file and therefor the DNS server / records. Of course you can also schedule this script by cron, so you no longer have run anything manually. Just add a new static mapping on the EdgeRouter X and the DNS will automatically be updated within a minute.
+
+If configured properly, you can now add static DHCP mappings and your DNS service will resolv them properly.
 
 # Configuration
 
-We recommend you create a new `dnsmasq` config file located at `/etc/dnsmasq.d/*.conf`, because `/etc/dnsmasq.conf` will automatically be overwritten by vyatta.
-Here's an example of an additional config file:
+We recommend the following DNS service configuration:
 
 ```
-# Additional hosts file.
-addn-hosts=/etc/hosts.static
+# Don't use the default /etc/hosts file.
+service dns forwarding options no-hosts
+
+# Use /etc/hosts.static-mappings for lookups.
+service dns forwarding options addn-hosts=/etc/hosts.static-mappings
 
 # Never forward plain names (without a dot or domain part).
-domain-needed
+service dns forwarding options domain-needed
 
 # Never forward addresses in the non-routed address spaces.
-bogus-priv
+service dns forwarding options bogus-priv
 
-# Add the domain to simple hostnames.
-expand-hosts
-domain=<your domain>
+# Add the domain to hostname lookups without a domain.
+service dns forwarding options expand-hosts
+service dns forwarding options domain=<your domain>
 
-# Local domains which will should not be forwarded.
-local=/<your domain>/
+# Don't forward the local domain.
+service dns forwarding options local=/<your domain>/
 ```
 
-Please note you need at least the `addn-hosts` parameter.
+If you want an additional file for host lookups (e.g. aliases), simply add a new hosts file with an additional `addn-hosts` option.
 
 # Usage
 
@@ -41,7 +45,7 @@ We recommend you copy the script to `/usr/local/bin/update-static-hosts.py`.
 To update the hosts file you now can simply run:
 
 ```bash
-/usr/local/bin/edgerouter_dnsmasq_updater.py <your static hosts file>
+/usr/local/bin/edgerouter_dnsmasq_updater.py /etc/hosts.static-mappings 
 ```
 
 This will update the hosts file and reload `dnsmasq` via `SIGHUP`.
@@ -54,5 +58,5 @@ __IMPORTANT__: The script will __REPLACE__ the defined file, so you shouldn't de
 If you want your script to run every minute just create `/etc/cron.d/update-static-hosts` with the following content:
 
 ```
-* * * * *   root    /usr/local/bin/update-static-hosts.py <your static hosts file>
+* * * * *   root    /usr/local/bin/update-static-hosts.py /etc/hosts.static-mappings
 ```
