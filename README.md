@@ -11,7 +11,11 @@ If configured properly, you can now add static DHCP mappings and your DNS servic
 ## Copy the script
 
 Make sure you've a copy of the [update script](update-static-hosts.py) script and placed it on the filesystem of the EdgeRouter X.  
-We recommend you copy the script to `/usr/local/bin/update-static-hosts.py`.
+We recommend you copy the script manually to `/usr/local/bin/update-static-hosts.py` or run:
+
+```
+sudo curl -o /usr/local/bin/update-static-hosts.py https://raw.githubusercontent.com/confirm/edgerouter-dnsmasq-updater/master/update-static-hosts.py
+```
 
 __IMPORTANT__: Please note you need to install the script everytime when you update or restore the EdgeRouter X.
 
@@ -20,7 +24,7 @@ __IMPORTANT__: Please note you need to install the script everytime when you upd
 To create or update the hosts file, you can simply run the following command:
 
 ```bash
-/usr/local/bin/edgerouter_dnsmasq_updater.py /etc/hosts.static-mappings 
+sudo /usr/local/bin/update-static-hosts.py /etc/hosts.static-mappings 
 ```
 
 In case the static mappings changed, the script will update the defined hosts file (i.e. `/etc/hosts.static-mappings`) and reload `dnsmasq` via `SIGHUP`.  
