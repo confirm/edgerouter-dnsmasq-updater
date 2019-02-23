@@ -24,10 +24,10 @@ __IMPORTANT__: If you install the script in this path, the script will be left u
 To create or update the hosts file, you can simply run the following command:
 
 ```bash
-sudo /config/scripts/update-static-hosts.py /etc/hosts.static-mappings 
+sudo /config/scripts/update-static-hosts.py /config/user-data/hosts.static-mappings 
 ```
 
-In case the static mappings changed, the script will update the defined hosts file (i.e. `/etc/hosts.static-mappings`) and reload `dnsmasq` via `SIGHUP`.  
+In case the static mappings changed, the script will update the defined hosts file (i.e. `/config/user-data/hosts.static-mappings `) and reload `dnsmasq` via `SIGHUP`.  
 
 __IMPORTANT__: The script will __REPLACE__ the defined file, so you shouldn't define `/etc/hosts` as your static hosts file.
 
@@ -54,7 +54,7 @@ To keep the hosts file up-to-date, you want to add a cronjob which runs the scri
 ```
 set system task-scheduler task update-static-hosts crontab-spec "* * * * *"
 set system task-scheduler task update-static-hosts executable path /config/scripts/update-static-hosts.py
-set system task-scheduler task update-static-hosts executable arguments /etc/hosts.static-mappings
+set system task-scheduler task update-static-hosts executable arguments /config/user-data/hosts.static-mappings 
 ```
 
 ## DNS configuration
@@ -66,8 +66,8 @@ We recommend the following configuration:
 # Don't use the default /etc/hosts file.
 set service dns forwarding options no-hosts
 
-# Use /etc/hosts.static-mappings for lookups.
-set service dns forwarding options addn-hosts=/etc/hosts.static-mappings
+# Use /config/user-data/hosts.static-mappings for lookups.
+set service dns forwarding options addn-hosts=/config/user-data/hosts.static-mappings 
 
 # Never forward plain names (without a dot or domain part).
 set service dns forwarding options domain-needed
