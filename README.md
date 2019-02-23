@@ -11,20 +11,20 @@ If configured properly, you can now add static DHCP mappings and your DNS servic
 ## Copy the script
 
 Make sure you've a copy of the [update script](update-static-hosts.py) script and placed it on the filesystem of the EdgeRouter X.  
-We recommend you copy the script manually to `/usr/local/bin/update-static-hosts.py` or run:
+We recommend you copy the script manually to `/config/scripts/update-static-hosts.py` or run:
 
 ```
-sudo curl -o /usr/local/bin/update-static-hosts.py https://raw.githubusercontent.com/confirm/edgerouter-dnsmasq-updater/master/update-static-hosts.py
+sudo curl -o /config/scripts/update-static-hosts.py https://raw.githubusercontent.com/confirm/edgerouter-dnsmasq-updater/master/update-static-hosts.py
 ```
 
-__IMPORTANT__: Please note you need to install the script everytime when you update or restore the EdgeRouter X.
+__IMPORTANT__: If you install the script in this path, the script will be left untouched by upgrades etc.
 
 ## Running the script
 
 To create or update the hosts file, you can simply run the following command:
 
 ```bash
-sudo /usr/local/bin/update-static-hosts.py /etc/hosts.static-mappings 
+sudo /config/scripts/update-static-hosts.py /etc/hosts.static-mappings 
 ```
 
 In case the static mappings changed, the script will update the defined hosts file (i.e. `/etc/hosts.static-mappings`) and reload `dnsmasq` via `SIGHUP`.  
@@ -53,7 +53,7 @@ To keep the hosts file up-to-date, you want to add a cronjob which runs the scri
 
 ```
 set system task-scheduler task update-static-hosts crontab-spec "* * * * *"
-set system task-scheduler task update-static-hosts executable path /usr/local/bin/update-static-hosts.py
+set system task-scheduler task update-static-hosts executable path /config/scripts/update-static-hosts.py
 set system task-scheduler task update-static-hosts executable arguments /etc/hosts.static-mappings
 ```
 
